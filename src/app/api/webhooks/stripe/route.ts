@@ -23,10 +23,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
-  if (event.type === "checkout.session.completed") {
-    const session = event.data.object as Stripe.Checkout.Session;
-    const email = session.customer_details?.email;
-    const name = session.customer_details?.name;
+  if (event.type === "invoice.payment_succeeded") {
+    const invoice = event.data.object as Stripe.Invoice;
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "");
+
+    // Fetch full customer details
+    const customer = await stripe.customers.retrieve(invoice.customer as string);
+    if (customer.deleted) {
+      return NextResponse.json({ received: true });
+    }
+
+    const email = customer.email;
+    const name = customer.name;
 
     if (email) {
       await addToMailchimp(email, name || "");
