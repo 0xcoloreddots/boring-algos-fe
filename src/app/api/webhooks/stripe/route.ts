@@ -31,7 +31,12 @@ export async function POST(req: NextRequest) {
   }
 
   if (event.type === "invoice.payment_succeeded") {
-    const invoice = event.data.object as Stripe.Invoice;
+    const invoiceEvent = event.data.object as Stripe.Invoice;
+
+    // Fetch full invoice with expanded line items and product details
+    const invoice = await stripe.invoices.retrieve(invoiceEvent.id, {
+      expand: ["lines.data.pricing.price_details.price", "lines.data.pricing.price_details.product"],
+    });
 
     // Check if any line item matches an allowed product
     const hasAllowedProduct = invoice.lines?.data.some((line) => {
