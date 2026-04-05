@@ -119,6 +119,13 @@
   margin-bottom: 24px;
 }
 
+.error {
+  font-size: 13px;
+  color: #c44;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
 .successText {
   font-size: 14px;
   color: #6b6b64;

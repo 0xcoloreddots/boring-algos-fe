@@ -1,13 +1,32 @@
-// src/app/community/join/page.tsx
-import type { Metadata } from "next";
-import styles from "../community.module.css";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Join the Community — BoringAlgos",
-  description: "Join the BoringAlgos community.",
-};
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import styles from "../community.module.css";
+import { subscribe } from "./actions";
 
 export default function JoinPage() {
+  const router = useRouter();
+  const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setError("");
+    setSubmitting(true);
+
+    const formData = new FormData(e.currentTarget);
+    const result = await subscribe(formData);
+
+    if (result.error) {
+      setError(result.error);
+      setSubmitting(false);
+      return;
+    }
+
+    router.push("/community/success");
+  }
+
   return (
     <>
       <h1 className={styles.heading}>Join the BoringAlgos Community</h1>
@@ -15,24 +34,7 @@ export default function JoinPage() {
         Get updates, strategy insights, and early access to new tools.
       </p>
 
-      {/*
-        MAILCHIMP SETUP:
-        1. Replace the `action` URL below with your Mailchimp form action URL.
-           Find it in Mailchimp → Audience → Signup forms → Embedded forms.
-           It looks like: https://XXXXX.us1.list-manage.com/subscribe/post?u=XXXXX&id=XXXXX
-        2. The hidden input name for redirect is typically not needed if you
-           configure the success URL in Mailchimp's form settings.
-        3. Field names (FNAME, EMAIL) are Mailchimp merge tag defaults.
-           Adjust if your audience uses different merge tags.
-      */}
-      <form
-        action="MAILCHIMP_FORM_ACTION_URL"
-        method="POST"
-        noValidate
-      >
-        {/* Redirect to success page after submission */}
-        <input type="hidden" name="REDIRECT" value="/community/success" />
-
+      <form onSubmit={handleSubmit}>
         <div className={styles.inputGroup}>
           <input
             type="text"
@@ -40,6 +42,12 @@ export default function JoinPage() {
             className={styles.input}
             placeholder="First name"
             required
+          />
+          <input
+            type="text"
+            name="LNAME"
+            className={styles.input}
+            placeholder="Last name (optional)"
           />
           <input
             type="email"
@@ -50,13 +58,12 @@ export default function JoinPage() {
           />
         </div>
 
-        {/* Bot signup prevention */}
-        <div style={{ position: "absolute", left: "-5000px" }} aria-hidden="true">
-          <input type="text" name="b_MAILCHIMP_U_VALUE_MAILCHIMP_ID_VALUE" tabIndex={-1} defaultValue="" />
-        </div>
+        {error && (
+          <p className={styles.error}>{error}</p>
+        )}
 
-        <button type="submit" className={styles.button}>
-          Join the Community
+        <button type="submit" className={styles.button} disabled={submitting}>
+          {submitting ? "Joining..." : "Join the Community"}
         </button>
       </form>
     </>
