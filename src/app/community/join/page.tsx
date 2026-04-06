@@ -31,7 +31,7 @@ export default function JoinPage() {
     <>
       <h1 className={styles.heading}>Join the BoringAlgos Community</h1>
       <p className={styles.subheading}>
-        Get updates, strategy insights, and early access to new tools.
+        Get access to our FREE algo trading library, prop firm and trading guides, as well as early access to all our tools.
       </p>
 
       <form onSubmit={handleSubmit}>
@@ -40,14 +40,8 @@ export default function JoinPage() {
             type="text"
             name="FNAME"
             className={styles.input}
-            placeholder="First name"
+            placeholder="Name"
             required
-          />
-          <input
-            type="text"
-            name="LNAME"
-            className={styles.input}
-            placeholder="Last name (optional)"
           />
           <input
             type="email"
