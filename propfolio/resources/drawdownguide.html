@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drawdown Protocol | BoringAlgos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --serif:"DM Serif Display",serif;
+  --sans:"Montserrat",sans-serif;
+  --accent:#c9a84c;
+  --accent-dim:rgba(201,168,76,0.09);
+  --accent-border:rgba(201,168,76,0.22);
+  --bg:#0f0e0b;
+  --bg2:#181614;
+  --bg3:#222019;
+  --text:#f7f6f2;
+  --muted:#7a7870;
+  --border:rgba(247,246,242,0.07);
+  --border2:rgba(247,246,242,0.13);
+  --green-dim:rgba(42,122,74,0.12);
+  --green-border:rgba(90,173,126,0.3);
+  --green-text:#5aad7e;
+  --red-dim:rgba(200,60,60,0.1);
+  --red-border:rgba(200,80,80,0.28);
+  --red-text:#e07070;
+  --amber-dim:rgba(201,168,76,0.1);
+}
+html{background:var(--bg)}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:15px;line-height:1.75;min-height:100vh;padding-bottom:80px}
+body::before{content:"";position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.5}
+
+nav{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid var(--border);background:rgba(15,14,11,0.96);backdrop-filter:blur(12px)}
+.nav-logo{font-family:var(--serif);font-size:15px;color:var(--text);text-decoration:none;letter-spacing:0.02em}
+.nav-logo span{color:var(--accent)}
+.nav-tag{font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted)}
+
+.page{position:relative;z-index:1;max-width:660px;margin:0 auto;padding:0 24px}
+
+/* HEADER */
+.header{padding:56px 0 40px;text-align:center}
+.header-tag{display:inline-block;font-size:10px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:var(--accent);background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:20px;padding:5px 14px;margin-bottom:20px}
+.header h1{font-family:var(--serif);font-size:clamp(28px,5vw,44px);font-weight:400;line-height:1.1;letter-spacing:-0.02em;margin-bottom:16px}
+.header h1 em{font-style:italic;color:var(--accent)}
+.header-sub{font-size:14px;color:var(--muted);line-height:1.8;max-width:480px;margin:0 auto}
+
+/* CALM BOX */
+.calm-box{background:var(--green-dim);border:1px solid var(--green-border);border-radius:12px;padding:28px 28px;margin-bottom:32px;text-align:center}
+.calm-icon{font-size:36px;display:block;margin-bottom:14px}
+.calm-box h2{font-family:var(--serif);font-size:clamp(20px,3vw,28px);color:var(--text);margin-bottom:12px;line-height:1.2}
+.calm-box p{font-size:14px;color:var(--muted);line-height:1.85;max-width:480px;margin:0 auto}
+.calm-box p strong{color:var(--text);font-weight:500}
+
+/* SECTION */
+.section{margin-bottom:32px}
+.section-label{font-size:10px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:12px}
+.section h2{font-family:var(--serif);font-size:clamp(20px,3vw,28px);font-weight:400;line-height:1.15;color:var(--text);margin-bottom:16px}
+.section h2 em{font-style:italic;color:var(--accent)}
+.section p{font-size:14px;color:var(--muted);line-height:1.85;margin-bottom:12px}
+.section p strong{color:var(--text);font-weight:500}
+.section p:last-child{margin-bottom:0}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--border);margin:32px 0}
+
+/* PROTOCOL STEPS */
+.protocol{display:flex;flex-direction:column;gap:0}
+.p-step{display:flex;gap:18px;align-items:flex-start;padding:20px 0;border-bottom:1px solid var(--border)}
+.p-step:first-child{border-top:1px solid var(--border)}
+.p-num{font-family:var(--serif);font-size:26px;color:var(--accent);opacity:0.45;line-height:1;flex-shrink:0;min-width:28px;padding-top:2px}
+.p-content h4{font-size:14px;font-weight:600;color:var(--text);margin-bottom:5px}
+.p-content p{font-size:13px;color:var(--muted);line-height:1.75;margin:0}
+.p-content .p-tag{display:inline-block;font-size:9px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;padding:2px 8px;border-radius:3px;margin-top:8px}
+.p-tag.do{background:var(--green-dim);color:var(--green-text);border:1px solid var(--green-border)}
+.p-tag.dont{background:var(--red-dim);color:var(--red-text);border:1px solid var(--red-border)}
+.p-tag.check{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-border)}
+
+/* DO / DONT */
+.do-dont{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.do-box,.dont-box{border-radius:8px;padding:16px 18px}
+.do-box{background:var(--green-dim);border:1px solid var(--green-border)}
+.dont-box{background:var(--red-dim);border:1px solid var(--red-border)}
+.dd-label{font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:10px;display:block}
+.do-box .dd-label{color:var(--green-text)}
+.dont-box .dd-label{color:var(--red-text)}
+.dd-item{display:flex;gap:8px;font-size:12px;color:var(--muted);line-height:1.6;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
+.dd-item:last-child{border-bottom:none;padding-bottom:0}
+.dd-dot{flex-shrink:0;margin-top:5px;width:5px;height:5px;border-radius:50%}
+.do-box .dd-dot{background:var(--green-text)}
+.dont-box .dd-dot{background:var(--red-text)}
+
+/* EXPECTANCY TABLE */
+.exp-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:16px}
+.exp-table th{padding:9px 14px;text-align:left;color:var(--muted);font-weight:500;letter-spacing:0.05em;border-bottom:1px solid var(--border);background:var(--bg3);font-size:11px}
+.exp-table td{padding:10px 14px;border-bottom:1px solid var(--border);color:var(--text)}
+.exp-table td.highlight{color:var(--accent);font-weight:600}
+.exp-table tr:last-child td{border-bottom:none}
+
+/* STORY CARD */
+.story-card{background:var(--bg2);border:1px solid var(--accent-border);border-radius:12px;padding:28px;position:relative;overflow:hidden}
+.story-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
+.story-quote{font-family:var(--serif);font-size:clamp(17px,3vw,22px);font-style:italic;color:var(--text);line-height:1.45;margin-bottom:18px}
+.story-body{font-size:13px;color:var(--muted);line-height:1.85}
+.story-body strong{color:var(--text);font-weight:500}
+.story-placeholder{display:inline-block;background:var(--bg3);border:1px dashed var(--border2);border-radius:4px;padding:2px 8px;font-size:12px;color:var(--muted);font-style:normal;font-family:var(--sans)}
+.story-meta{margin-top:18px;padding-top:14px;border-top:1px solid var(--border);font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.story-avatar{width:28px;height:28px;border-radius:50%;background:var(--accent-dim);border:1px solid var(--accent-border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:var(--accent)}
+
+/* CONTACT BOX */
+.contact-box{background:var(--bg2);border:1px solid var(--border2);border-radius:10px;padding:22px 24px;margin-top:32px;display:flex;align-items:flex-start;gap:16px}
+.contact-icon{font-size:24px;flex-shrink:0;margin-top:2px}
+.contact-box h4{font-size:14px;font-weight:600;color:var(--text);margin-bottom:5px}
+.contact-box p{font-size:13px;color:var(--muted);line-height:1.7;margin:0}
+.contact-box a{color:var(--accent);text-decoration:none;font-weight:500}
+
+/* REMINDER BANNER */
+.reminder{background:var(--accent-dim);border:1px solid var(--accent-border);border-radius:10px;padding:20px 22px;margin-top:24px;display:flex;gap:14px;align-items:flex-start}
+.reminder-icon{font-size:20px;flex-shrink:0;margin-top:1px}
+.reminder-body{font-size:13px;color:var(--text);line-height:1.75}
+.reminder-body strong{color:var(--accent)}
+
+.footer-note{text-align:center;font-size:11px;color:var(--muted);opacity:0.45;padding:40px 0 0;line-height:1.7}
+
+@media(max-width:520px){
+  nav{padding:14px 20px}
+  .page{padding:0 16px}
+  .do-dont{grid-template-columns:1fr}
+  .story-card{padding:20px}
+  .calm-box{padding:22px 18px}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="/" class="nav-logo">Boring<span>Algos</span></a>
+  <span class="nav-tag">Drawdown Protocol</span>
+</nav>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-tag">Drawdown Protocol</div>
+    <h1>Your account is in drawdown.<br><em>Here is exactly what to do.</em></h1>
+  </div>
+
+  <!-- CALM BOX -->
+  <div class="calm-box">
+    <span class="calm-icon">🧘</span>
+    <h2>First: take a breath. This is normal.</h2>
+    <p>Every trading system experiences drawdown. Even profitable trading systems. This is a mathematical certainty, not a sign that something is broken. In this guide I'm going to guide you through how to manage your emotions during drawdowns.</p>
+  </div>
+
+  <!-- SECTION 1: POSITIVE EXPECTANCY -->
+  <div class="section">
+    <span class="section-label">Section 1</span>
+    <h2>What drawdown actually means<br>for a <em>positive expectancy system.</em></h2>
+    <p>A positive expectancy system means that over a large enough sample of trades, the system makes money. Not every trade. Not every week. Not even every month. But over time, across hundreds of trades, the edge compounds in your favour.</p>
+    <p>Drawdown is what happens in between. It is the natural variance of any system with real edge. Every single year of our backtesting contained drawdown periods. The strategies survived them all and remained profitable. What you are seeing right now is within the expected distribution of outcomes. We constantly monitor the live maximum drawdowns of all our Propfolios and if they ever breach our threshold we will inform you immediately to pause those Propfolios.</p>
+    <p style="color:var(--accent);font-family:var(--serif);font-size:clamp(17px,2.5vw,22px);font-style:italic;line-height:1.4;margin-top:20px">The system is proven to make money over time. One drawdown period does not change that.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 2: PROP FIRM EXPECTANCY -->
+  <div class="section">
+    <span class="section-label">Section 2</span>
+    <h2>Prop firm expectancy.<br><em>The same logic, one level up.</em></h2>
+    <p>In trading, you do not know if the next trade will be a win or a loss. But if your system has positive expectancy, you know that over a large enough sample of trades you will be net positive. That is what makes a trading system worth running.</p>
+    <p>Prop firm challenges work the same way. We do not know if the next challenge we run will pass or not. And honestly, we do not need to know. What we do know is that over a large sample of challenge attempts, our Propfolios are net positive. Some will pass, some will not, but the overall result across many attempts is profitable.</p>
+    <p><strong>Just like in trading, one losing trade does not define your system's edge — one failed challenge does not define ours.</strong> The edge is defined by hundreds of trades and multiple challenge cycles over time. You are looking at one data point in a much larger sample.</p>
+    <p>We know our Propfolios have positive expectancy at both the trade level and the challenge level because of our rigorous backtesting framework — 6 years in-sample, 1 year out-of-sample, Monte Carlo simulation, parameter sensitivity analysis, and live forward testing. The data supports running the system through drawdown, not stopping it.</p>
+
+    <div class="reminder">
+      <div class="reminder-icon">🔁</div>
+      <div class="reminder-body">If this challenge does not pass, <strong>the guarantee means Sam keeps working with you</strong> at no extra charge until you receive a payout that covers your membership cost. This is not the end. It is one attempt in a system with long positive expectancy.</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 3: UNCORRELATED STRATEGIES AND PORTFOLIOS -->
+  <div class="section">
+    <span class="section-label">Section 3</span>
+    <h2>Why uncorrelated strategies and portfolios<br><em>protect you during drawdown.</em></h2>
+    <p>This is exactly why we built Propfolio the way we did, and why we recommend running multiple Propfolios rather than just one.</p>
+    <p><strong>Uncorrelated strategies inside a portfolio</strong> means that when one strategy is in drawdown, the others are not moving in the same direction. They carry the account while the underperforming strategy recovers. The result: lower overall drawdown with the same or better returns compared to running a single strategy alone.</p>
+    <p><strong>Low-correlation portfolios</strong> takes this one level further. Each Propfolio (A, B, C) has low correlation with the others. When you run multiple Propfolios across separate challenge accounts, you get portfolios that each have low drawdown and strong returns — so your overall chance of passing at least one challenge in any given period is significantly higher than if you were running one account with one approach.</p>
+    <p>This is the core reason we recommend having multiple Propfolios running simultaneously. It is not just about diversification for its own sake. It is a deliberate strategy to increase your probability of getting funded and getting payouts across any given time period.</p>
+
+    <table class="exp-table">
+      <thead>
+        <tr><th>Layer</th><th>What it does for you</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Uncorrelated strategies (within a Propfolio)</td><td class="highlight">Reduces drawdown. When one strategy dips, others carry. Smoother equity curve.</td></tr>
+        <tr><td>Low-correlation portfolios (across accounts)</td><td class="highlight">More accounts passing independently. Higher combined chance of funded payouts.</td></tr>
+        <tr><td>Running Propfolio A, B, and C simultaneously</td><td>Three separate challenges, three separate equity curves. If one has a tough period, the others may not.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SECTION 4: THE PROTOCOL -->
+  <div class="section">
+    <span class="section-label">Section 4</span>
+    <h2>The drawdown protocol.<br><em>Follow these steps in order.</em></h2>
+    <p>Work through this list calmly, in order. Do not skip steps. Do not act before you have completed the checklist.</p>
+
+    <div class="protocol">
+      <div class="p-step">
+        <div class="p-num">01</div>
+        <div class="p-content">
+          <h4>Check your drawdown percentage in your FTMO account</h4>
+          <p>Go to your FTMO account and check your current drawdown percentage. Note both your daily drawdown and your overall drawdown. Write the numbers down before doing anything else.</p>
+          <span class="p-tag check">Action required</span>
+        </div>
+      </div>
+      <div class="p-step">
+        <div class="p-num">02</div>
+        <div class="p-content">
+          <h4>Review your backtest reports in PropfolioOS</h4>
+          <p>Open PropfolioOS and pull up the backtest report for the Propfolio you are running. Look at the historical drawdown periods — you will see that the system has been through periods exactly like this before and recovered. Also check your current drawdown against the backtest maximum drawdown and the Monte Carlo 95% Confidence Interval drawdown. More will be explained in the video.</p>
+          <span class="p-tag do">Do this</span>
+        </div>
+      </div>
+      <div class="p-step">
+        <div class="p-num">03</div>
+        <div class="p-content">
+          <h4>Check your trades against our live portfolio monitoring</h4>
+          <p>Cross-reference what is happening in your account against our live FX Blue monitoring links. If your trades match what our portfolios are trading, the system is working as intended. If you see significant divergence, message Sam.</p>
+          <div style="display:flex;flex-direction:column;gap:5px;margin-top:10px">
+            <a href="https://www.fxblue.com/users/OneChallengeProp" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:var(--accent);text-decoration:none;font-weight:500">FX Blue: One Challenge Propfolio →</a>
+            <a href="https://www.fxblue.com/users/PropfolioA" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:var(--accent);text-decoration:none;font-weight:500">FX Blue: Propfolio A →</a>
+            <a href="https://www.fxblue.com/users/PropfolioB" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:var(--accent);text-decoration:none;font-weight:500">FX Blue: Propfolio B →</a>
+            <a href="https://www.fxblue.com/users/PropfolioC" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:var(--accent);text-decoration:none;font-weight:500">FX Blue: Propfolio C →</a>
+          </div>
+          <span class="p-tag do" style="margin-top:10px">Do this</span>
+        </div>
+      </div>
+      <div class="p-step">
+        <div class="p-num">04</div>
+        <div class="p-content">
+          <h4>Do not close any open trades manually</h4>
+          <p>This is the most common and most costly mistake. Closing trades manually locks in losses and removes the system's ability to recover. The algo placed those trades with a defined exit logic. Let it execute. The moment you manually close a trade, you have taken over from the system.</p>
+          <span class="p-tag dont">Do not do this</span>
+        </div>
+      </div>
+      <div class="p-step">
+        <div class="p-num">05</div>
+        <div class="p-content">
+          <h4>Do not change any settings or risk parameters</h4>
+          <p>Reducing lot sizes mid-challenge changes the strategy's expectancy. Increasing them to recover losses faster is even more dangerous. The settings were configured for your specific prop firm's rules. Leave them exactly as they are.</p>
+          <span class="p-tag dont">Do not do this</span>
+        </div>
+      </div>
+      <div class="p-step">
+        <div class="p-num">06</div>
+        <div class="p-content">
+          <h4>Verify the algos are still running correctly</h4>
+          <p>Check that your VPS is online and your MT4/MT5 terminal is connected. Check that the EA is enabled on each chart and showing as active. If anything looks wrong technically, refer to your troubleshooting guide or message Sam.</p>
+          <span class="p-tag do">Do this</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- DO / DONT -->
+  <div class="section">
+    <span class="section-label">Quick reference</span>
+    <h2>During drawdown:<br><em>do this, not that.</em></h2>
+    <div class="do-dont">
+      <div class="do-box">
+        <span class="dd-label">Do</span>
+        <div class="dd-item"><div class="dd-dot"></div><span>Check your drawdown percentage in your FTMO account</span></div>
+        <div class="dd-item"><div class="dd-dot"></div><span>Review backtest reports and Monte Carlo drawdown in PropfolioOS</span></div>
+        <div class="dd-item"><div class="dd-dot"></div><span>Cross-check your trades against our live FX Blue portfolio monitoring</span></div>
+        <div class="dd-item"><div class="dd-dot"></div><span>Verify your VPS and EA are running correctly</span></div>
+        <div class="dd-item"><div class="dd-dot"></div><span>Remind yourself this is expected variance in a positive expectancy system</span></div>
+        <div class="dd-item"><div class="dd-dot"></div><span>Wait. Let the system do what it was built to do.</span></div>
+      </div>
+      <div class="dont-box">
+        <span class="dd-label">Do not</span>
+        <div class="dd-item"><div class="dd-dot"></div><span>Manually close open trades</span></div>
+        <div class="dd-item"><div class="dd-dot"></div><span>Change lot sizes or risk settings</span></div>
+        <div class="dd-item"><div class="dd-dot"></div><span>Disable the EA</span></div>
+        <div class="dd-item"><div class="dd-dot"></div><span>Add manual trades to "recover" faster</span></div>
+        <div class="dd-item"><div class="dd-dot"></div><span>Check the account every 5 minutes</span></div>
+        <div class="dd-item"><div class="dd-dot"></div><span>Make any decisions while panicking</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="contact-box">
+    <div class="contact-icon">💬</div>
+    <div>
+      <h4>Still anxious? Message Sam directly.</h4>
+      <p>If you have worked through this guide and you are still unsure, do not sit with it alone. Message Sam on <a href="https://t.me/samwjh" target="_blank">Telegram @samwjh</a> or <a href="https://www.instagram.com/sam.boringalgos" target="_blank">Instagram @sam.boringalgos</a>. Share your current drawdown level and he will tell you exactly what the situation looks like from the outside.</p>
+    </div>
+  </div>
+
+  <p class="footer-note">This guide is for Propfolio members only. The information here is specific to running Propfolio portfolios on prop firm challenge accounts. It is not general trading advice.<br>BoringAlgos · Boring trading. Verified results.</p>
+
+</div>
+
+</body>
+</html>

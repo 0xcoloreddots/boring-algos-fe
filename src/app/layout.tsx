@@ -19,6 +19,9 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "BoringAlgos",
   description: "Boring trading. Verified results.",
+  icons: {
+    icon: { url: "/logo.svg", type: "image/svg+xml" },
+  },
 };
 
 export default function RootLayout({
