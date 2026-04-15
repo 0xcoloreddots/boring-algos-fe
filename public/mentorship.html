@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BoringAlgos Mentorship</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── CSS Variables from brand kit ── */
+    :root {
+      --serif: 'DM Serif Display', serif;
+      --sans: 'Montserrat', sans-serif;
+      --accent: #c9a84c;
+      --accent-light: rgba(201,168,76,0.12);
+      --bg: #ffffff;
+      --bg2: #f7f6f2;
+      --text: #0f0e0b;
+      --muted: #8a8478;
+      --border: rgba(0,0,0,0.08);
+      --border2: rgba(0,0,0,0.15);
+    }
+
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Fade-in animation on load ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-up {
+      opacity: 0;
+      animation: fadeUp 0.7s ease forwards;
+    }
+
+    /* Stagger delays for sections */
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.25s; }
+    .delay-3 { animation-delay: 0.4s; }
+    .delay-4 { animation-delay: 0.55s; }
+    .delay-5 { animation-delay: 0.7s; }
+    .delay-6 { animation-delay: 0.85s; }
+
+    /* ── Layout helpers ── */
+    .container {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 28px;
+    }
+
+    section { padding: 80px 0; }
+
+    /* ── Thin gold rule ── */
+    .gold-rule {
+      width: 48px;
+      height: 2px;
+      background: var(--accent);
+      margin-bottom: 28px;
+    }
+
+    /* ── Section label ── */
+    .section-label {
+      font-family: var(--sans);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    /* ══════════════════════════════
+       HERO
+    ══════════════════════════════ */
+    .hero {
+      background: var(--text);
+      color: #fff;
+      padding: 100px 0 90px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Subtle grid texture */
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+
+    .hero-wordmark {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 48px;
+    }
+
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(36px, 6vw, 58px);
+      line-height: 1.12;
+      color: #fff;
+      max-width: 640px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      font-size: 14px;
+      font-weight: 400;
+      color: rgba(255,255,255,0.55);
+      max-width: 480px;
+      margin-bottom: 48px;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-primary {
+      display: inline-block;
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--text);
+      background: var(--accent);
+      padding: 16px 36px;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    .hero-tag {
+      margin-top: 28px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.08em;
+    }
+
+    /* ══════════════════════════════
+       WHO THIS IS FOR
+    ══════════════════════════════ */
+    .who { background: var(--bg2); }
+
+    .who h2 {
+      font-family: var(--serif);
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.2;
+      margin-bottom: 40px;
+    }
+
+    .who-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 560px) {
+      .who-grid { grid-template-columns: 1fr; }
+    }
+
+    .who-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 28px 26px;
+      position: relative;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .who-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    /* Gold corner accent */
+    .who-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 28px; height: 2px;
+      background: var(--accent);
+    }
+
+    .who-card-title {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .who-card p {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* Not for you callout */
+    .not-for-you {
+      margin-top: 40px;
+      border-left: 2px solid var(--border2);
+      padding: 18px 22px;
+      background: var(--bg);
+    }
+
+    .not-for-you p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .not-for-you strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ══════════════════════════════
+       WHAT YOU WILL GET
+    ══════════════════════════════ */
+    .get { background: var(--bg); }
+
+    .get h2 {
+      font-family: var(--serif);
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .get-intro {
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 540px;
+      margin-bottom: 48px;
+    }
+
+    /* Phase timeline */
+    .phases { display: flex; flex-direction: column; gap: 0; }
+
+    .phase {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 0 28px;
+      position: relative;
+    }
+
+    /* Vertical line connecting phases */
+    .phase:not(:last-child) .phase-line::after {
+      content: '';
+      position: absolute;
+      top: 32px;
+      left: 39px; /* half of 80px col */
+      width: 1px;
+      height: calc(100% + 0px);
+      background: var(--border);
+    }
+
+    .phase-line {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 4px;
+    }
+
+    .phase-num {
+      width: 32px; height: 32px;
+      border: 1px solid var(--border2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      color: var(--accent);
+      background: var(--bg);
+      position: relative;
+      z-index: 1;
+      flex-shrink: 0;
+    }
+
+    .phase-body {
+      padding-bottom: 44px;
+    }
+
+    .phase-body h3 {
+      font-family: var(--serif);
+      font-size: 20px;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .phase-body ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .phase-body ul li {
+      font-size: 13.5px;
+      color: var(--muted);
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .phase-body ul li::before {
+      content: '·';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-size: 12px;
+    }
+
+    .phase-outcome {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border);
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: var(--text);
+    }
+
+    /* Optional phase badge */
+    .phase-optional {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: 1px solid var(--border2);
+      padding: 2px 8px;
+      margin-left: 10px;
+      vertical-align: middle;
+      position: relative;
+      top: -2px;
+    }
+
+    /* Included extras */
+    .extras {
+      margin-top: 52px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      padding: 36px 32px;
+    }
+
+    .extras-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    .extras-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 28px;
+    }
+
+    @media (max-width: 500px) {
+      .extras-grid { grid-template-columns: 1fr; }
+    }
+
+    .extra-item {
+      font-size: 13.5px;
+      color: var(--text);
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .extra-item span.dot {
+      width: 6px; height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 7px;
+    }
+
+    /* ══════════════════════════════
+       PIPELINE
+    ══════════════════════════════ */
+    .pipeline { background: var(--bg2); }
+
+    .pipeline h2 {
+      font-family: var(--serif);
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .pipeline-intro {
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 540px;
+      margin-bottom: 52px;
+    }
+
+    .pipeline-steps {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2px;
+    }
+
+    @media (max-width: 560px) {
+      .pipeline-steps { grid-template-columns: 1fr; }
+    }
+
+    .pipeline-step {
+      background: var(--bg);
+      padding: 32px 28px;
+      position: relative;
+      transition: background 0.2s;
+    }
+
+    .pipeline-step:hover { background: #faf9f5; }
+
+    .pipeline-step-num {
+      font-family: var(--serif);
+      font-size: 42px;
+      line-height: 1;
+      color: rgba(201,168,76,0.18);
+      margin-bottom: 16px;
+    }
+
+    .pipeline-step h4 {
+      font-family: var(--sans);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 10px;
+    }
+
+    .pipeline-step p {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ══════════════════════════════
+       CTA
+    ══════════════════════════════ */
+    .cta {
+      background: var(--text);
+      color: #fff;
+      text-align: center;
+      padding: 100px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+    }
+
+    .cta h2 {
+      font-family: var(--serif);
+      font-size: clamp(28px, 4vw, 42px);
+      color: #fff;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .cta p {
+      font-size: 13.5px;
+      color: rgba(255,255,255,0.5);
+      max-width: 400px;
+      margin: 0 auto 40px;
+      position: relative;
+    }
+
+    .cta .btn-primary { position: relative; }
+
+    .cta-note {
+      margin-top: 20px;
+      font-size: 11px;
+      color: rgba(255,255,255,0.25);
+      letter-spacing: 0.08em;
+      position: relative;
+    }
+
+    /* ══════════════════════════════
+       FOOTER
+    ══════════════════════════════ */
+    footer {
+      background: var(--bg2);
+      border-top: 1px solid var(--border);
+      padding: 36px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .footer-wordmark {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      font-size: 11px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover { color: var(--accent); }
+
+    /* ── Scroll reveal (JS-enhanced) ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════ HERO ══════ -->
+  <section class="hero">
+    <div class="container">
+      <p class="hero-wordmark fade-up delay-1">BoringAlgos</p>
+      <h1 class="fade-up delay-2">
+        Build Profitable Strategies.<br>
+        <em>Stack them into portfolios.</em>
+      </h1>
+      <p class="hero-sub fade-up delay-3">
+        An 8-week private mentorship. You'll go from zero to running your own library of validated algo strategies. No hype. No signals. No shortcuts.
+      </p>
+      <div class="fade-up delay-4">
+        <a href="https://calendly.com/d/cvtm-4fm-vn7/propfolio-mentorship" target="_blank" class="btn-primary">Book a Free Intro Call</a>
+      </div>
+      <p class="hero-tag fade-up delay-5">Boring trading. Verified results.</p>
+    </div>
+  </section>
+
+  <!-- ══════ WHO THIS IS FOR ══════ -->
+  <section class="who">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">Who This Is For</p>
+        <div class="gold-rule"></div>
+        <h2>Built for anyone serious<br>about algo trading.</h2>
+      </div>
+
+      <div class="who-grid">
+
+        <div class="who-card reveal">
+          <p class="who-card-title">Complete Beginners</p>
+          <p>No coding background, no trading experience. You want a structured path in starting from the very first click in MT5.</p>
+        </div>
+
+        <div class="who-card reveal">
+          <p class="who-card-title">Manual Traders</p>
+          <p>You understand markets but are tired of being glued to charts. You want to systematise what you already know.</p>
+        </div>
+
+        <div class="who-card reveal">
+          <p class="who-card-title">Coders & Developers</p>
+          <p>You can write code but don't know where to apply it in trading. You want a proven framework to build real-world strategies fast.</p>
+        </div>
+
+        <div class="who-card reveal">
+          <p class="who-card-title">Prop Firm Traders</p>
+          <p>You're already inside prop firms and want to replace discretionary trades with automated, backtested systems that scale.</p>
+        </div>
+
+      </div>
+
+      <div class="not-for-you reveal">
+        <p><strong>Not for you if:</strong> you're looking for signals to copy, shortcuts to skip the work, or a course to collect and never use. This is hands-on. You'll be building the whole way through.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ WHAT YOU WILL GET ══════ -->
+  <section class="get">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">What You Will Get</p>
+        <div class="gold-rule"></div>
+        <h2>Five areas. One clear outcome.</h2>
+        <p class="get-intro">By the end, you'll know how to build profitable strategies, stress-test them properly, and combine them into a diversified portfolio. On your own. No dependencies.</p>
+      </div>
+
+      <div class="phases">
+
+        <!-- Phase 1 -->
+        <div class="phase reveal">
+          <div class="phase-line">
+            <div class="phase-num">01</div>
+          </div>
+          <div class="phase-body">
+            <h3>Foundation</h3>
+            <ul>
+              <li>Build strategies using no-code platforms no programming needed to start</li>
+              <li>Understand how MT5 works end-to-end</li>
+              <li>Backtesting basics: optimization modes, sourcing clean tick data, and avoiding common traps</li>
+            </ul>
+            <p class="phase-outcome">You take the manual setups and ideas you already have and turn them into algorithms that run 24/7. No hesitation, no fatigue, none of the biases that quietly wreck discretionary traders.</p>
+          </div>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="phase reveal">
+          <div class="phase-line">
+            <div class="phase-num">02</div>
+          </div>
+          <div class="phase-body">
+            <h3>Robust Backtesting</h3>
+            <ul>
+              <li>Multiple backtesting methods explained and compared</li>
+              <li>How to tell if a strategy actually works or just looks good on paper</li>
+              <li>Red flags, curve-fitting, and what "robust" really means</li>
+            </ul>
+            <p class="phase-outcome">You can pressure-test any backtest from every angle (out-of-sample, walk-forward, Monte Carlo, stress) and decide for yourself whether the edge is real or just optimization noise.</p>
+          </div>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="phase reveal">
+          <div class="phase-line">
+            <div class="phase-num">03</div>
+          </div>
+          <div class="phase-body">
+            <h3>Portfolio Construction</h3>
+            <ul>
+              <li>How to combine individual strategies into a diversified portfolio</li>
+              <li>Allocation logic, correlation management, and drawdown control</li>
+              <li>Think like a fund not a single-strategy trader</li>
+            </ul>
+            <p class="phase-outcome">You can combine uncorrelated strategies into a portfolio whose equity curve is smoother than any of its parts. The allocation and correlation logic holds up live, not just in-sample.</p>
+          </div>
+        </div>
+
+        <!-- Phase 4 -->
+        <div class="phase reveal">
+          <div class="phase-line">
+            <div class="phase-num">04</div>
+          </div>
+          <div class="phase-body">
+            <h3>Advanced Execution & Live Trading</h3>
+            <ul>
+              <li>Backtest vs live: understanding the gap and closing it</li>
+              <li>Prop firm math how payouts, scaling, and drawdown rules actually work</li>
+              <li>Strategy monitoring: knowing when a strategy is still working vs breaking down</li>
+              <li>Live execution: slippage, spread, latency what eats your alpha and how to control it</li>
+              <li>Automation, combinatorial approaches, and genetic optimisation</li>
+            </ul>
+            <p class="phase-outcome">You go live. You know the execution costs that quietly eat most traders' edge, and how to manage them. You can spot regime changes and strategy decay before either damages the account. And you understand the prop firm math that separates consistent winners from everyone else.</p>
+          </div>
+        </div>
+
+        <!-- Phase 5 -->
+        <div class="phase reveal">
+          <div class="phase-line">
+            <div class="phase-num">05</div>
+          </div>
+          <div class="phase-body">
+            <h3>Advanced Math <span class="phase-optional">Optional</span></h3>
+            <ul>
+              <li>The mathematics behind why strategies behave the way they do</li>
+              <li>For those who want to go deeper than intuition alone</li>
+            </ul>
+            <p class="phase-outcome">You build real fluency in the probability and statistics behind strategy behavior. You reason from the math, not from rules of thumb.</p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Included extras -->
+      <div class="extras reveal">
+        <p class="extras-label">Also Included</p>
+        <div class="extras-grid">
+          <div class="extra-item"><span class="dot"></span><span>2 real, live-verified strategies handed to you as a starting point</span></div>
+          <div class="extra-item"><span class="dot"></span><span>Frameworks to find &amp; validate strategies independently forever</span></div>
+          <div class="extra-item"><span class="dot"></span><span>Direct access via Telegram for questions between sessions</span></div>
+          <div class="extra-item"><span class="dot"></span><span>A process you can repeat to amass a library of strategies over time</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════ THE PIPELINE ══════ -->
+  <section class="pipeline">
+    <div class="container">
+      <div class="reveal">
+        <p class="section-label">Our Secret</p>
+        <div class="gold-rule"></div>
+        <h2>The pipeline that multiplies<br>every strategy you find.</h2>
+        <p class="pipeline-intro">Most traders find one strategy and hope it works. We teach you a repeatable 4-step pipeline that lets you find, validate, and squeeze the maximum out of every edge you discover.</p>
+      </div>
+
+      <div class="pipeline-steps">
+
+        <div class="pipeline-step reveal">
+          <div class="pipeline-step-num">01</div>
+          <h4>Find</h4>
+          <p>A structured process for generating strategy ideas systematically, not randomly. You will never stare at a blank screen wondering what to build next.</p>
+        </div>
+
+        <div class="pipeline-step reveal">
+          <div class="pipeline-step-num">02</div>
+          <h4>Test Fast</h4>
+          <p>Rapid initial testing to kill bad ideas quickly. You learn to screen dozens of concepts in the time most traders spend obsessing over one.</p>
+        </div>
+
+        <div class="pipeline-step reveal">
+          <div class="pipeline-step-num">03</div>
+          <h4>Test Automated</h4>
+          <p>Let machines do the heavy lifting. Automated testing across parameters, instruments, and timeframes so you validate at scale without burning hours.</p>
+        </div>
+
+        <div class="pipeline-step reveal">
+          <div class="pipeline-step-num">04</div>
+          <h4>Milk It</h4>
+          <p>One good strategy is the seed of many. Learn how to extract variants, apply it across markets, and turn a single edge into a family of strategies for your portfolio.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ CTA ══════ -->
+  <section class="cta">
+    <div class="container">
+      <h2 class="reveal">Ready to start building?</h2>
+      <p class="reveal">Book a no-pressure intro call. We'll walk through where you are, what you want, and whether this is the right fit.</p>
+      <div class="reveal">
+        <a href="https://calendly.com/d/cvtm-4fm-vn7/propfolio-mentorship" target="_blank" class="btn-primary">Book a Free Intro Call</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════ FOOTER ══════ -->
+  <footer>
+    <div class="container">
+      <div class="footer-inner">
+        <span class="footer-wordmark">BoringAlgos</span>
+        <div class="footer-links">
+          <a href="https://t.me/samwjh" target="_blank">Telegram</a>
+          <a href="https://instagram.com/sam.boringalgos" target="_blank">Instagram</a>
+          <a href="mailto:support@boringalgos.com">Email</a>
+          <a href="https://boringalgos.com" target="_blank">boringalgos.com</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Scroll reveal watches each .reveal element and adds .visible when it enters view
+    const revealEls = document.querySelectorAll('.reveal');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target); // Stop watching once revealed
+        }
+      });
+    }, {
+      threshold: 0.12 // Trigger when 12% of the element is visible
+    });
+
+    revealEls.forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
